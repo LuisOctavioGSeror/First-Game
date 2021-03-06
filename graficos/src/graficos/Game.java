@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 
@@ -16,12 +17,25 @@ public class Game extends Canvas implements Runnable{
 	private Thread thread;
 	private boolean isRunning = true;
 	private final int WIDTH = 240;
-	private final int HEIGHT = 160;
+	private final int HEIGHT = 220;
 	private final int SCALE = 3;
 	
 	private BufferedImage image;
 	
+	private Spritesheet sheet;
+	private BufferedImage[] player;
+	private int  x = 0;
+	private boolean volta;
+	private int frames = 0;
+	private int maxFrames =2;
+	private int curAnimation = 0, maxAnimation = 3;
+	
 	public Game() {
+		sheet = new Spritesheet("/imagem.png");
+		player = new BufferedImage[3];
+		player[0] = sheet.getSprite(31, 23, 32, 32);
+		player[1] = sheet.getSprite(63, 23, 32, 32);
+		player[2] = sheet.getSprite(95, 23, 32, 32);
 		setPreferredSize(new Dimension(WIDTH*SCALE, HEIGHT*SCALE));
 		initFrame();
 		image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
@@ -58,6 +72,31 @@ public class Game extends Canvas implements Runnable{
 	}
 	
 	public void Tick() {
+		frames++;
+		if(frames > maxFrames) {
+			frames = 0;
+			curAnimation++;
+			if(curAnimation >= maxAnimation) {
+				curAnimation = 0;
+			}
+		}
+		
+		
+		if(x < 200 && volta == false) {
+			x+=3;
+		}
+		else if(x >=200) {
+			x-=3;
+			volta = true;
+		}
+		else if(volta == true && x > 0) {
+			x-=3;
+		}
+		
+		else if(volta == true && x == 0) {
+			volta = false;
+		}
+		
 		
 	}
 	
@@ -68,9 +107,13 @@ public class Game extends Canvas implements Runnable{
 			return;
 		}
 		Graphics g = image.getGraphics();
-		g.setColor(new Color(0, 0, 0));
+		
+		
+		
+		g.setColor(new Color(200, 0, 255));
 		g.fillRect(0, 0, WIDTH, HEIGHT);
 		
+		/*
 		g.setColor(Color.CYAN);
 		g.fillRect(0, 0, 30, 30);
 		g.setColor(Color.red);
@@ -80,6 +123,21 @@ public class Game extends Canvas implements Runnable{
 		g.setFont(new Font("Arial",Font.BOLD, 20));
 		g.setColor(Color.pink);
 		g.drawString("Ola Mundo", 30, 20);
+		
+		*/
+		/*Renderização do jogo */
+		Graphics2D g2 = (Graphics2D) g;
+		g2.drawImage(player[curAnimation], x, 90, null);
+		//g2.rotate(Math.toRadians(90), 90, 90);
+		/*
+		g.drawImage(player, x, 10, null);
+		g.drawImage(player, x, 50, null);
+		g.drawImage(player, x, 90, null);
+		g.drawImage(player, x, 130, null);
+		*/
+		//****//
+		
+		g.dispose();
 		g = bs.getDrawGraphics();
 		g.drawImage(image, 0, 0, WIDTH*SCALE, HEIGHT*SCALE, null);
 		bs.show();
