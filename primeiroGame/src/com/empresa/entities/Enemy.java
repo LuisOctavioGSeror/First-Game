@@ -83,11 +83,11 @@ public class Enemy extends Entity {
 				//colidindo
 				if(Game.rand.nextInt(100) < 10) {
 					Game.player.life-= Game.rand.nextInt(3); //perde aleatoriamente um valor de 0 a 3 de vida
-					System.out.println("vida " + Game.player.life);
+					Game.player.isDamaged = true;
 				}
-				//if(Game.player.life == 0) {
-					//System.exit(1); //desliga
-				//}
+				if(Game.player.life <= 0) {
+					//System.exit(1); //desliga GAME OVER
+				}
 			}
 			
 		//}	

@@ -4,6 +4,7 @@ package com.empresa.main;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -19,6 +20,7 @@ import com.empresa.entities.Enemy;
 import com.empresa.entities.Entity;
 import com.empresa.entities.Player;
 import com.empresa.graphics.Spritesheet;
+import com.empresa.graphics.UI;
 import com.empresa.world.World;
 
 public class Game extends Canvas implements Runnable,KeyListener{
@@ -41,11 +43,13 @@ public class Game extends Canvas implements Runnable,KeyListener{
 
 	public static Spritesheet spritesheet;
 	
-	public World world;
+	public static World world;
 	
 	public static Player player;
 	
 	public static Random rand;
+	
+	public UI ui;
 	
 	public Game() {
 		rand = new Random();
@@ -53,10 +57,11 @@ public class Game extends Canvas implements Runnable,KeyListener{
 		setPreferredSize(new Dimension(WIDTH*SCALE, HEIGHT*SCALE));
 		initFrame();
 		//inicializando objetos
+		ui = new UI();
 		image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 		entities = new ArrayList<Entity>();
 		enemies = new ArrayList<Enemy>();
-		spritesheet = new Spritesheet("/spritesheet.png");
+		spritesheet = new Spritesheet("/spritesheet3.png");
 		player = new Player(0, 0, 16, 16, spritesheet.getSprite(34, 0, 16, 16));
 		entities.add(player);
 		world = new World("/map.png");
@@ -117,11 +122,15 @@ public class Game extends Canvas implements Runnable,KeyListener{
 		for(int i = 0; i < entities.size(); i++) {
 			Entity e = entities.get(i);
 			e.render(g); 
-		}  
-		
+		}
+		ui.render(g);
+		/***/
 		g.dispose();
 		g = bs.getDrawGraphics();
 		g.drawImage(image, 0, 0, WIDTH*SCALE, HEIGHT*SCALE, null);
+		g.setFont(new Font("arial", Font.BOLD, 20));
+		g.setColor(Color.white);
+		g.drawString("Ammo: "+ player.ammo, 15, 75);
 		bs.show();
 	}
 	
