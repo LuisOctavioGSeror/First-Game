@@ -13,14 +13,18 @@ public class Enemy extends Entity {
 	
 	private double speed = 0.5;
 	private boolean moved = false;
+	private boolean enemyIsDamaged = false;
+	
+	private int damagedFrames = 10, damagedCurrent = 0;
 
 	private int maskx = 5, masky = 6, maskw = 10, maskh = 10;
 	
 	private int frames = 0, maxFrames = 5, index = 0, maxIndex = 2;
 	
 	private BufferedImage[] sprites;
+	private BufferedImage[] enemyDamaged;
 
-
+	private int life = 10;
 
 	public Enemy(int x, int y, int width, int height, BufferedImage sprite) {
 		super(x, y, width, height, null);
@@ -28,6 +32,11 @@ public class Enemy extends Entity {
 		sprites[0] = Game.spritesheet.getSprite(112, 17, 16, 16);
 		sprites[1] = Game.spritesheet.getSprite(127, 17, 16, 16);
 		sprites[2] = Game.spritesheet.getSprite(143, 17, 16, 16);
+		
+		enemyDamaged = new BufferedImage[3];
+		enemyDamaged[0] = Game.spritesheet.getSprite(112, 33, 16, 16);
+		enemyDamaged[1] = Game.spritesheet.getSprite(127, 33, 16, 16);
+		enemyDamaged[2] = Game.spritesheet.getSprite(143, 33, 16, 16);
 
 	}
 
@@ -83,14 +92,51 @@ public class Enemy extends Entity {
 				//colidindo
 				if(Game.rand.nextInt(100) < 10) {
 					Game.player.life-= Game.rand.nextInt(3); //perde aleatoriamente um valor de 0 a 3 de vida
-					System.out.println("vida " + Game.player.life);
+					Game.player.isDamaged = true;
 				}
-				//if(Game.player.life == 0) {
-					//System.exit(1); //desliga
-				//}
+				if(Game.player.life <= 0) {
+					//System.exit(1); //desliga GAME OVER
+				}
 			}
 			
-		//}	
+		//}
+			
+		isCollidingWithBullet();
+		
+		if(life <= 0) {
+			destroySelf();
+			return;
+		}
+		
+		if(enemyIsDamaged == true) {
+			this.damagedCurrent++;
+			if(this.damagedCurrent == damagedFrames) {
+				this.damagedCurrent = 0;
+				this.enemyIsDamaged = false;
+			}	
+		}
+	}
+	
+	public void destroySelf() {
+		Game.enemies.remove(this);
+		Game.entities.remove(this);
+	}
+	
+	public void isCollidingWithBullet() {
+		for(int i = 0; i < Game.bullets.size(); i++) {
+			Entity e = Game.bullets.get(i);
+			if(e instanceof BulletShoot) {
+				
+				if(Entity.isColidding(this, e)) {
+					enemyIsDamaged = true;
+					life-=5;
+					Game.bullets.remove(i);
+					return;
+				}
+			}
+		}
+		
+		
 	}
 	
 	public boolean isColiddingWithPlayer() {
@@ -120,7 +166,12 @@ public class Enemy extends Entity {
 	
 	 
 	public void render(Graphics g) {
-		g.drawImage(sprites[index], this.getX() - Camera.x, this.getY() - Camera.y, null);
+		if(!enemyIsDamaged)
+			g.drawImage(sprites[index], this.getX() - Camera.x, this.getY() - Camera.y, null);
+		
+		else
+			g.drawImage(enemyDamaged[index], this.getX() - Camera.x, this.getY() - Camera.y, null);
+
 		//g.setColor(Color.blue);
 		//g.fillRect(this.getX() - Camera.x + maskx, this.getY() + masky - Camera.y, maskw, maskh); // testando mascara
 	} 

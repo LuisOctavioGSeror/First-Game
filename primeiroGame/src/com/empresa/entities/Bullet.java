@@ -1,4 +1,4 @@
-package com.empresa.entities;
+package com.empresa.entities; //esse Bullet é a municao no caso 
 
 import java.awt.image.BufferedImage;
 
