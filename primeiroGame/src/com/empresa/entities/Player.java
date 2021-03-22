@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import com.empresa.graphics.Spritesheet;
 import com.empresa.main.Game;
+import com.empresa.main.Sound;
 import com.empresa.world.Camera;
 import com.empresa.world.World;
 
@@ -136,10 +137,12 @@ public class Player extends Entity {
 		if(shoot && hasGun && ammo > 0) {
 			shoot = false; //one shot at a time 
 			ammo--;
+			
 			int dx = 0;
+			int dy = 0;
 			int px = 0;
 			int py = 0;
-			int dy = 0;
+	
 			
 			if(dir == right_dir) {
 				dx = 1;
@@ -148,7 +151,7 @@ public class Player extends Entity {
 			else if(dir == left_dir){
 				dx = -1;
 			}
-			else if(dir == up_dir) {
+			if(dir == up_dir) {
 				px = 6;
 				dy = -1;
 				py = -4;
@@ -159,7 +162,8 @@ public class Player extends Entity {
 				py = 2;
 			}
 			
-			BulletShoot bullet = new BulletShoot(this.getX() + px, this.getY() + py, 3, 3, null, dx, 0);
+			Sound.shootEffect.play();
+			BulletShoot bullet = new BulletShoot(this.getX() + px, this.getY() + py, 3, 3, null, dx, dy);
 			Game.bullets.add(bullet);
 		}
 		
@@ -169,7 +173,7 @@ public class Player extends Entity {
 			double angle = Math.atan2(my - (this.getY() + 8 - Camera.y), mx - (this.getX() + 8 - Camera.x));
 			//System.out.println(angle);
 			if(hasGun && ammo > 0) {
-				//ammo--;
+				ammo--;
 				double dx = Math.cos(angle);
 				double dy = Math.sin(angle);
 				int px = 0, py = 0;
@@ -192,7 +196,7 @@ public class Player extends Entity {
 					py = 2;
 				}
 				
-				
+				Sound.shootEffect.play();
 				BulletShoot bullet = new BulletShoot(this.getX() + px, this.getY() + py, 3, 3, null, dx, dy);
 				Game.bullets.add(bullet);
 			}
@@ -202,7 +206,7 @@ public class Player extends Entity {
 		
 		
 		if(life <= 0) {
-			Game.gameOver();
+			Game.gameState = "GAME_OVER";
 		}
 		
 		Camera.x = Camera.clamp(getX() - (Game.WIDTH/2), 0, World.WIDTH*16 - Game.WIDTH);
@@ -229,7 +233,7 @@ public class Player extends Entity {
 			if(atual instanceof Bullet) {
 				if(Entity.isColidding(this, atual)) {
 					if(ammo < maxAmmo) {
-						ammo += 10;
+						ammo += 100;
 						Game.entities.remove(atual);
 					}
 				}

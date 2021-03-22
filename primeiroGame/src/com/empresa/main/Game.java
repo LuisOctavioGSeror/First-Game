@@ -6,6 +6,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -38,7 +40,7 @@ public class Game extends Canvas implements Runnable,KeyListener,MouseListener{
 	private boolean isRunning = true;
 	public static final int WIDTH = 240;
 	public static final int HEIGHT = 160;
-	private final int SCALE = 3;
+	public static final int SCALE = 3;
 	
 	
 	private int CUR_LEVEL = 1, MAX_LEVEL = 2;
@@ -58,10 +60,22 @@ public class Game extends Canvas implements Runnable,KeyListener,MouseListener{
 	
 	public UI ui;
 	
+	public static String gameState = "MENU";
+	
+	private boolean showMessageGameOver = true;
+	private int framesGameOver = 0;
+	private boolean restartGame = false;
+	
+	public Menu menu;
+	
+	public Pause pause;
+	
 	public Game() {
+		//Sound.musicBackground.loop();
 		rand = new Random();
 		addKeyListener(this);
 		addMouseListener(this);
+		//setPreferredSize(new Dimension(Toolkit.getDefaultToolkit().getScreenSize())); //full screen
 		setPreferredSize(new Dimension(WIDTH*SCALE, HEIGHT*SCALE));
 		initFrame();
 		//inicializando objetos
@@ -75,11 +89,16 @@ public class Game extends Canvas implements Runnable,KeyListener,MouseListener{
 		entities.add(player);
 		world = new World("/map_level_1.png");
 		
+		
+		menu = new Menu();
+		pause = new Pause();
+
 	}
 	
 	public void initFrame() {
 		frame = new JFrame("Game#1");
 		frame.add(this);
+		//frame.setUndecorated(true); //for full screen
 		frame.setResizable(false);
 		frame.pack();
 		frame.setLocationRelativeTo(null);
@@ -107,37 +126,55 @@ public class Game extends Canvas implements Runnable,KeyListener,MouseListener{
 		game.start();
 	}
 	
-	public static void gameOver() {
-		entities.clear();
-		enemies.clear();
-		entities = new ArrayList<Entity>();
-		enemies = new ArrayList<Enemy>();
-		spritesheet = new Spritesheet("/spritesheet3.png");
-		player = new Player(0, 0, 16, 16, Game.spritesheet.getSprite(34, 0, 16, 16));
-		entities.add(Game.player);
-		world = new World("/map_level_1.png");
-		return;
-	}
-	
 	public void tick() {
-		for(int i = 0; i < entities.size(); i++) {
-			Entity e = entities.get(i);
-			e.tick();
-		}
 		
-		for(int i = 0; i < bullets.size(); i++) {
-			bullets.get(i).tick();	
-		}
-		
-		if(enemies.size() == 0) {
-			//System.out.println("proximo level");
-			CUR_LEVEL++;
-			if(CUR_LEVEL > MAX_LEVEL) //TEM UMA BOA RAZAO PRA NAO SER CUR_LEVEL<MAX_LEVEL CUR_LEVEL++ 
-				CUR_LEVEL = MAX_LEVEL;
+		if(gameState == "NORMAL") {
+			this.restartGame = false;
+			for(int i = 0; i < entities.size(); i++) {
+				Entity e = entities.get(i);
+				e.tick();
+			}
 			
-			String newWorld = "level_" + CUR_LEVEL + ".png";
-			System.out.println(newWorld);
-			World.restartGame(newWorld);
+			for(int i = 0; i < bullets.size(); i++) {
+				bullets.get(i).tick();	
+			}
+			
+			if(enemies.size() == 0) {
+				//System.out.println("proximo level");
+				CUR_LEVEL++;
+				if(CUR_LEVEL > MAX_LEVEL) //TEM UMA BOA RAZAO PRA NAO SER CUR_LEVEL<MAX_LEVEL CUR_LEVEL++ 
+					CUR_LEVEL = MAX_LEVEL;
+				
+				String newWorld = "level_" + CUR_LEVEL + ".png";
+				World.restartGame(newWorld);
+			}
+		}
+		
+		else if(gameState == "GAME_OVER") {
+			this.framesGameOver++;
+			if(this.framesGameOver == 35) {
+				this.framesGameOver = 0;
+				if(this.showMessageGameOver) 
+					this.showMessageGameOver = false;
+				else 
+					this.showMessageGameOver = true;
+			}
+			
+			if(restartGame) {
+				CUR_LEVEL = 1;
+				this.restartGame = false;
+				this.gameState = "NORMAL";
+				String newWorld = "level_" + CUR_LEVEL + ".png";
+				World.restartGame(newWorld);
+			}
+		}
+		
+		else if(gameState == "MENU") { 
+			menu.tick();
+		}
+		
+		else if(gameState == "PAUSED") {
+			pause.tick();
 		}
 	}
 	
@@ -172,6 +209,27 @@ public class Game extends Canvas implements Runnable,KeyListener,MouseListener{
 		g.setFont(new Font("arial", Font.BOLD, 20));
 		g.setColor(Color.white);
 		g.drawString("Ammo: "+ player.ammo, 15, 75);
+		if(gameState == "GAME_OVER") {
+			Graphics2D g2 = (Graphics2D) g;
+			g2.setColor(new Color(0,0,0,100));
+			g2.fillRect(0, 0, WIDTH*SCALE, HEIGHT*SCALE);
+			g.setFont(new Font("arial", Font.BOLD, 36));
+			g.setColor(Color.white);
+			g.drawString("GAME OVER", WIDTH*SCALE/2 - 80, HEIGHT*SCALE/2 );
+			g.setFont(new Font("arial", Font.CENTER_BASELINE, 32));
+			if(showMessageGameOver)
+				g.drawString("Pressione enter para reiniciar", WIDTH*SCALE/2 - 200, HEIGHT*SCALE/2 + 80 );
+
+		}
+		
+		else if(gameState == "MENU") {
+			menu.render(g);
+		}
+		
+		else if(gameState == "PAUSED") {
+			pause.render(g);
+		}
+		
 		bs.show();
 	}
 	
@@ -225,15 +283,45 @@ public class Game extends Canvas implements Runnable,KeyListener,MouseListener{
 		
 		if(e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
 			player.up = true;
+			if(gameState == "MENU") {
+				menu.up = true;
+			}
+			else if(gameState == "PAUSED") {
+				pause.up = true;
+			}
 		}
 		
 		else if(e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
 			player.down = true;
+			if(gameState == "MENU") {
+				menu.down = true;
+			}
+			else if(gameState == "PAUSED") {
+				pause.down = true;
+			}
 		}
 		
 		if(e.getKeyCode() == KeyEvent.VK_X) {
 			player.shoot = true;
 		}
+		
+		if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+			this.restartGame = true;
+			if(gameState == "MENU") {
+				menu.enter = true;
+			}
+			else if(gameState == "PAUSED") {
+				pause.enter = true;
+			}
+		}
+		
+		if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+			if(gameState == "NORMAL") {
+				gameState = "PAUSED";
+			}
+			
+		}
+		
 	}
 
 	@Override
@@ -249,14 +337,33 @@ public class Game extends Canvas implements Runnable,KeyListener,MouseListener{
 		
 		if(e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
 			player.up = false;
+			if(gameState == "MENU") {
+				menu.up = false;
+			}
+			else if(gameState == "PAUSED") {
+				pause.up = false;
+			}
 		}
 		
 		else if(e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
 			player.down = false;
+			if(gameState == "MENU") {
+				menu.up = false;
+			}
+			else if(gameState == "PAUSED") {
+				pause.down = false;
+			}
 		}
 		
 		if(e.getKeyCode() == KeyEvent.VK_X) {
 			player.shoot = false;
+		}
+		
+		if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+			this.restartGame = false;
+			if(gameState == "MENU") {
+				menu.enter = false;
+			}
 		}
 	}
 
