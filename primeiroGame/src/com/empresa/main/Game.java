@@ -2,6 +2,7 @@ package com.empresa.main;
 
 
 import java.awt.Canvas;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -20,6 +21,7 @@ import java.util.Random;
 
 import javax.swing.JFrame;
 
+import com.empresa.entities.Boss;
 import com.empresa.entities.BulletShoot;
 import com.empresa.entities.Enemy;
 import com.empresa.entities.Entity;
@@ -48,6 +50,7 @@ public class Game extends Canvas implements Runnable,KeyListener,MouseListener{
 	
 	public static List<Entity> entities;
 	public static List<Enemy> enemies;
+	public static List<Boss> boss;
 	public static List<BulletShoot> bullets;
 
 	public static Spritesheet spritesheet;
@@ -66,6 +69,8 @@ public class Game extends Canvas implements Runnable,KeyListener,MouseListener{
 	private int framesGameOver = 0;
 	private boolean restartGame = false;
 	
+	public static boolean saveGame = false;
+	
 	public Menu menu;
 	
 	public Pause pause;
@@ -83,6 +88,8 @@ public class Game extends Canvas implements Runnable,KeyListener,MouseListener{
 		image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 		entities = new ArrayList<Entity>();
 		enemies = new ArrayList<Enemy>();
+		boss = new ArrayList<Boss>();
+
 		bullets = new ArrayList<BulletShoot>();
 		spritesheet = new Spritesheet("/spritesheet3.png");
 		player = new Player(0, 0, 16, 16, spritesheet.getSprite(34, 0, 16, 16));
@@ -129,6 +136,14 @@ public class Game extends Canvas implements Runnable,KeyListener,MouseListener{
 	public void tick() {
 		
 		if(gameState == "NORMAL") {
+			
+			if(this.saveGame == true) {
+				this.saveGame = false;
+				String[] opt1 = {"level"};
+				int[] opt2 = {this.CUR_LEVEL};
+				Menu.saveGame(opt1, opt2, 10);
+				System.out.println("Jogo salvo!");
+			}
 			this.restartGame = false;
 			for(int i = 0; i < entities.size(); i++) {
 				Entity e = entities.get(i);
@@ -318,6 +333,10 @@ public class Game extends Canvas implements Runnable,KeyListener,MouseListener{
 		if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
 			if(gameState == "NORMAL") {
 				gameState = "PAUSED";
+			}
+			else if(gameState == "PAUSED") {
+				Pause.currentOption = 0;
+				gameState = "NORMAL";
 			}
 			
 		}

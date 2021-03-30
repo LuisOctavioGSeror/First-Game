@@ -170,12 +170,12 @@ public class Enemy extends Entity {
 	
 	 
 	public void render(Graphics g) {
-		if(!enemyIsDamaged)
+		if(!enemyIsDamaged) {
 			g.drawImage(sprites[index], this.getX() - Camera.x, this.getY() - Camera.y, null);
-		
+		}	
 		else
 			g.drawImage(enemyDamaged[index], this.getX() - Camera.x, this.getY() - Camera.y, null);
-
+			
 		//g.setColor(Color.blue);
 		//g.fillRect(this.getX() - Camera.x + maskx, this.getY() + masky - Camera.y, maskw, maskh); // testando mascara
 	} 

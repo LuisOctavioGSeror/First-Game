@@ -8,7 +8,7 @@ public class Sound {
 	
 	private AudioClip clip;
 	
-	//public static final Sound musicBackground = new Sound("/music.wav");
+	public static final Sound musicBackground = new Sound("/background.wav");
 	//public static final Sound hurtEffect = new Sound("/hurt.wav");
 	public static final Sound shootEffect = new Sound("/shoot3.wav");
 	public static final Sound takeBulletEffect = new Sound("/bullet.wav");
