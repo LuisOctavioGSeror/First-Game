@@ -76,7 +76,6 @@ public class Game extends Canvas implements Runnable,KeyListener,MouseListener{
 	public Pause pause;
 	
 	public Game() {
-		//Sound.musicBackground.loop();
 		rand = new Random();
 		addKeyListener(this);
 		addMouseListener(this);
@@ -184,7 +183,8 @@ public class Game extends Canvas implements Runnable,KeyListener,MouseListener{
 			}
 		}
 		
-		else if(gameState == "MENU") { 
+		else if(gameState == "MENU") {
+			Sound.musicBackground.loop();
 			menu.tick();
 		}
 		

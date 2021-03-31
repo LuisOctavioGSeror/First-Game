@@ -49,7 +49,7 @@ public class Menu {
 			}
 		}
 		
-		if(down) {
+		if(down) { 
 			Sound.menuChangeItem.play(); 
 			down = false;
 			currentOption++;

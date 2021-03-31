@@ -174,7 +174,7 @@ public class Player extends Entity {
 			//System.out.println(angle);
 			if(hasGun && ammo > 0) {
 				ammo--;
-				double dx = Math.cos(angle);
+				double dx = Math.cos(angle); 
 				double dy = Math.sin(angle);
 				int px = 0, py = 0;
 				if(dir == right_dir) {

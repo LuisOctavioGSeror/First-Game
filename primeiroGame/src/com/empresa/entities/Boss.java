@@ -89,10 +89,10 @@ public class Boss extends Enemy {
 			else {
 				//colidindo
 				if(Game.rand.nextInt(100) < 10) {
-					//Sound.hurtEffect.play();
+					Sound.hurtEffect.play();
 					Game.player.life-= Game.rand.nextInt(3); //perde aleatoriamente um valor de 0 a 3 de vida
 					Game.player.isDamaged = true;
-					Sound.hurt.play(); 
+					//Sound.hurt.play(); 
 				}
 				if(Game.player.life <= 0) {
 					//System.exit(1); //desliga GAME OVER
@@ -105,7 +105,7 @@ public class Boss extends Enemy {
 		
 		if(life <= 0) {
 			destroySelf();
-			Sound.zombiehurt.play();
+			//Sound.zombiehurt.play();
 			return;
 		}
 		
