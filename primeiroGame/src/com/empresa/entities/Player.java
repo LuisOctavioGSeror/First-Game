@@ -1,10 +1,9 @@
 package com.empresa.entities;
 
 import java.awt.Graphics;
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 
-import com.empresa.graphics.Spritesheet;
+import java.awt.image.BufferedImage;
+
 import com.empresa.main.Game;
 import com.empresa.main.Sound;
 import com.empresa.world.Camera;
@@ -134,38 +133,43 @@ public class Player extends Entity {
 			}
 		}
 		
-		if(shoot && hasGun && ammo > 0) {
-			shoot = false; //one shot at a time 
-			ammo--;
+		if(shoot && hasGun) {
+			shoot = false; //one shot at a time
+			if(ammo > 0) {
+				ammo--;
+				
+				int dx = 0;
+				int dy = 0;
+				int px = 0;
+				int py = 0;
+		
+				
+				if(dir == right_dir) {
+					dx = 1;
+					px = 8;
+				}
+				else if(dir == left_dir){
+					dx = -1;
+				}
+				if(dir == up_dir) {
+					px = 6;
+					dy = -1;
+					py = -4;
+				}
+				else if(dir == down_dir){
+					px = 7;
+					dy = 1;
+					py = 2;
+				}
 			
-			int dx = 0;
-			int dy = 0;
-			int px = 0;
-			int py = 0;
-	
-			
-			if(dir == right_dir) {
-				dx = 1;
-				px = 8;
+				Sound.shootEffect.play();
+				BulletShoot bullet = new BulletShoot(this.getX() + px, this.getY() + py, 3, 3, null, dx, dy);
+				Game.bullets.add(bullet);
 			}
-			else if(dir == left_dir){
-				dx = -1;
+			else if(ammo == 0) {
+				Sound.emptyGun.play();
 			}
-			if(dir == up_dir) {
-				px = 6;
-				dy = -1;
-				py = -4;
-			}
-			else if(dir == down_dir){
-				px = 7;
-				dy = 1;
-				py = 2;
-			}
-			
-			Sound.shootEffect.play();
-			BulletShoot bullet = new BulletShoot(this.getX() + px, this.getY() + py, 3, 3, null, dx, dy);
-			Game.bullets.add(bullet);
-		}
+		}	
 		
 		if(mouseShoot) {
 			mouseShoot = false;
@@ -201,6 +205,10 @@ public class Player extends Entity {
 				Game.bullets.add(bullet);
 			}
 			
+			else if(hasGun && ammo == 0) {
+				Sound.emptyGun.play();
+			}
+			
 			
 		}
 		
@@ -221,7 +229,7 @@ public class Player extends Entity {
 				if(Entity.isColidding(this, atual)) {
 					hasGun = true;
 					Game.entities.remove(atual);
-					
+					Sound.takeGun.play();
 				}
 			}
 		}
@@ -234,7 +242,11 @@ public class Player extends Entity {
 				if(Entity.isColidding(this, atual)) {
 					if(ammo < maxAmmo) {
 						ammo += 100;
+						if(ammo > maxAmmo)
+							ammo = maxAmmo;
+						
 						Game.entities.remove(atual);
+						Sound.takeAmmo.play();
 					}
 				}
 			}
@@ -246,10 +258,13 @@ public class Player extends Entity {
 			Entity atual = Game.entities.get(i);
 			if(atual instanceof LifePack) {
 				if(Entity.isColidding(this, atual)) {
-					life+=10;
-					if(life > 100)
-						life = 100;
-					Game.entities.remove(atual);
+					if(life < 100) {
+						life+=10;
+						if(life > 100)
+							life = 100;
+						Game.entities.remove(atual);
+						Sound.pickLife.play();
+					}	
 				}
 			}
 		}

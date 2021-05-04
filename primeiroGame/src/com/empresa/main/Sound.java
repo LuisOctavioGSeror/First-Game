@@ -92,6 +92,10 @@ public class Sound {
 	public static Sound musicBackground = new Sound("/menuBackground.wav");
 	public static final Sound hurtEffect = new Sound("/hurt.wav");
 	public static final Sound shootEffect = new Sound("/shoot3.wav");
+	public static final Sound emptyGun = new Sound("/emptyGun.wav");
+	public static final Sound takeGun = new Sound("/takeGun.wav");
+	public static final Sound takeAmmo = new Sound("/takeAmmo.wav");
+	public static final Sound pickLife = new Sound("/pickLife.wav");
 	public static final Sound takeBulletEffect = new Sound("/bullet.wav");
 	public static final Sound takeLifeEffect = new Sound("/life.wav");
 	public static final Sound menuChangeItem = new Sound("/menuChangeItem.wav");
@@ -100,7 +104,7 @@ public class Sound {
 	public static final Sound hurt = new Sound("/hurt.wav");
 	public static final Sound hurt2 = new Sound("/hurt2.wav");
 	public static final Sound zombieHurt = new Sound("/zombiehurt.wav");
-
+	
 	
 	
 	private Sound(String name) {

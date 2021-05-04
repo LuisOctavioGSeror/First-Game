@@ -3,6 +3,8 @@ package com.empresa.main;
 
 import java.awt.Canvas;
 
+
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -184,7 +186,6 @@ public class Game extends Canvas implements Runnable,KeyListener,MouseListener{
 		}
 		
 		else if(gameState == "MENU") {
-			Sound.musicBackground.loop(); //nao ta funcionando n sei pq
 			menu.tick();
 		}
 		
@@ -257,6 +258,7 @@ public class Game extends Canvas implements Runnable,KeyListener,MouseListener{
 		int frames = 0;
 		double timer = System.currentTimeMillis();
 		requestFocus(); //foco automatico ao iniciar
+		Sound.musicBackground.loop(); //nao ta funcionando n sei pq
 		while(isRunning) {
 			long now = System.nanoTime();
 			delta+= (now - lastTime) / ns;

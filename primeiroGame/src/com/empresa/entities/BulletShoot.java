@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 
 import com.empresa.main.Game;
 import com.empresa.world.Camera;
+import com.empresa.world.World;
 
 public class BulletShoot extends Entity {
 	
@@ -26,10 +27,11 @@ public class BulletShoot extends Entity {
 		x+=dx*spd;
 		y+=dy*spd;
 		curLifeTime++;
-		if(curLifeTime == lifeTime) {
+		if((curLifeTime == lifeTime) || !(World.isFree((int)x, (int)y))) {
 			Game.bullets.remove(this);
 			return;
 		}
+		
 	}
 	
 	public void render(Graphics g) {

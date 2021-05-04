@@ -7,24 +7,27 @@ import java.awt.image.BufferedImage;
 
 import com.empresa.main.Game;
 import com.empresa.main.Sound;
+import com.empresa.world.AStar;
 import com.empresa.world.Camera;
-import com.empresa.world.World;
+import com.empresa.world.Vector2i;
 
 public class Enemy extends Entity {
 	
-	private double speed = 0.5;
-	private boolean moved = false;
+	public double speed = 0.5;
+	//private boolean moved = false;
 	private boolean enemyIsDamaged = false;
 	
 	private int damagedFrames = 10, damagedCurrent = 0;
-
-	private int maskx = 5, masky = 6, maskw = 10, maskh = 10;
-	
+		
 	private int frames = 0, maxFrames = 5, index = 0, maxIndex = 2;
 	
 	private BufferedImage[] sprites;
 	private BufferedImage[] enemyDamaged;
+	
+	private double initialTime = System.currentTimeMillis();
+	private double daley;
 
+	
 	private int life = 10;
 
 	public Enemy(int x, int y, int width, int height, BufferedImage sprite) {
@@ -43,6 +46,15 @@ public class Enemy extends Entity {
 
 	
 	public void tick() {
+		
+		//masky = 5;
+		//maskx = 4;
+		mwidth = 10;
+		mheight = 10;
+		
+		daley = System.currentTimeMillis();
+		
+		/* without A* method
 		moved = false;
 		//if(Game.rand.nextInt(100) < 16) {  //usando aleatoriedade para "manipular" velocidade
 			if(isColiddingWithPlayer() == false) {
@@ -74,22 +86,25 @@ public class Enemy extends Entity {
 					y-=speed;
 				}
 				
-				//if(moved) {
-					frames++;
-					if(frames == maxFrames) {
-						frames = 0;
-						index++;
-						if(index > maxIndex) 
-							index = 0;
-						
-					}  
-					
-				//}	
+				
+		
 					
 			}
+				
 			
-			
-			else {
+			*/
+			if(!isColiddingWithPlayer() && (this.calculateDistance((int)this.x, (int)this.y, (int)Game.player.getX(), (int)Game.player.getY()) < 150)) {
+				if(path == null || path.size() == 0 || (daley - initialTime >= 500)) {
+					initialTime = System.currentTimeMillis();
+					
+					Vector2i start = new Vector2i((int)(x/16), (int)(y/16));
+					Vector2i end = new Vector2i((int)(Game.player.x/16), (int)(Game.player.y/16));
+					
+					path  = AStar.findPath(Game.world, start, end);
+				}
+			}
+		
+			else if(isColiddingWithPlayer()) {
 				//colidindo
 				if(Game.rand.nextInt(100) < 10) {
 					Sound.hurtEffect.play();
@@ -101,6 +116,20 @@ public class Enemy extends Entity {
 					//System.exit(1); //desliga GAME OVER
 				}
 			}
+			
+			followPath(path, speed);
+		
+			//if(moved) {
+			frames++;
+			if(frames == maxFrames) {
+				frames = 0;
+				index++;
+				if(index > maxIndex) 
+					index = 0;
+				
+			}  
+			
+		//}	
 			
 		//}
 			
@@ -142,31 +171,15 @@ public class Enemy extends Entity {
 		
 		
 	}
-	
+	 
 	public boolean isColiddingWithPlayer() {
 		
-		Rectangle enemyCurrent = new Rectangle(this.getX() + maskx, this.getY() + masky, maskw, maskh);
+		Rectangle enemyCurrent = new Rectangle(this.getX() + maskx, this.getY() + masky, mwidth, mheight);
 		Rectangle player = new Rectangle(Game.player.getX(), Game.player.getY(), 16, 16);		
 		
 		return enemyCurrent.intersects(player);
 	}
 	
-	public boolean isColidding(int xnext, int ynext) {
-		Rectangle enemyCurrent = new Rectangle(xnext + maskx, ynext + masky, maskw, maskh);
-		for(int i = 0; i < Game.enemies.size(); i++) {
-			Enemy e = Game.enemies.get(i);
-			if(e == this)
-				continue;
-			
-			Rectangle targetEnemy = new Rectangle(e.getX() + maskx, e.getY() + masky, maskw, maskh);
-			if(enemyCurrent.intersects(targetEnemy)) {
-				return true;
-			}
-			
-		}
-		
-		return false;
-	}
 	
 	 
 	public void render(Graphics g) {
@@ -177,7 +190,7 @@ public class Enemy extends Entity {
 			g.drawImage(enemyDamaged[index], this.getX() - Camera.x, this.getY() - Camera.y, null);
 			
 		//g.setColor(Color.blue);
-		//g.fillRect(this.getX() - Camera.x + maskx, this.getY() + masky - Camera.y, maskw, maskh); // testando mascara
+		//g.fillRect(this.getX() - Camera.x + maskx, this.getY() + masky - Camera.y, mwidth, mheight); // testando mascara
 	} 
 	
 }

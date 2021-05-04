@@ -1,6 +1,7 @@
 package com.empresa.entities;
 
 import java.awt.Graphics;
+
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
@@ -23,7 +24,7 @@ public class Boss extends Enemy {
 	private int frames = 0, maxFrames = 5, index = 0, maxIndex = 2;
 	
 	private BufferedImage[] boss;
-	private BufferedImage[] bossDamaged;
+	//private BufferedImage[] bossDamaged;
 	
 	private int life = 100;
 
