@@ -6,7 +6,7 @@ public class Bullet extends Entity{
 
 	public Bullet(int x, int y, int width, int height, BufferedImage sprite) {
 		super(x, y, width, height, sprite);
-		// TODO Auto-generated constructor stub
+		// classe bullet se refere a munição não ao tiro
 	}
 
 }

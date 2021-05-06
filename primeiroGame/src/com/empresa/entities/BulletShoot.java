@@ -34,6 +34,12 @@ public class BulletShoot extends Entity {
 		
 	}
 	
+	public static void generateParticles(int amount, int x, int y) {
+		for(int i = 0; i < amount; i++) {
+			Game.entities.add(new Particle(x, y, 1, 1, null));
+		}
+	}
+	
 	public void render(Graphics g) {
 		g.setColor(Color.yellow);
 		g.fillOval(this.getX() - Camera.x, this.getY() + 9 - Camera.y, width, height);

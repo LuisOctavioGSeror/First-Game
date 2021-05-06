@@ -26,6 +26,8 @@ public class Enemy extends Entity {
 	
 	private double initialTime = System.currentTimeMillis();
 	private double daley;
+	
+	
 
 	
 	private int life = 10;
@@ -93,7 +95,7 @@ public class Enemy extends Entity {
 				
 			
 			*/
-			if(!isColiddingWithPlayer() && (this.calculateDistance((int)this.x, (int)this.y, (int)Game.player.getX(), (int)Game.player.getY()) < 150)) {
+			if(!isColiddingWithPlayer() && ((this.calculateDistance((int)this.x, (int)this.y, (int)Game.player.getX(), (int)Game.player.getY()) < 150) || Game.enemies.size() <= 10)) {
 				if(path == null || path.size() == 0 || (daley - initialTime >= 500)) {
 					initialTime = System.currentTimeMillis();
 					
@@ -127,7 +129,8 @@ public class Enemy extends Entity {
 				if(index > maxIndex) 
 					index = 0;
 				
-			}  
+			}
+			
 			
 		//}	
 			
@@ -137,7 +140,8 @@ public class Enemy extends Entity {
 		
 		if(life <= 0) {
 			destroySelf();
-			Sound.zombieHurt.play(); 
+			Sound.zombieHurt.play();
+			BulletShoot.generateParticles(100, (int)x, (int)y);
 			return;
 		}
 		
