@@ -1,18 +1,18 @@
 package com.empresa.entities;
 
 import java.awt.Graphics;
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 
-import com.empresa.graphics.Spritesheet;
+import java.awt.image.BufferedImage;
+
 import com.empresa.main.Game;
+import com.empresa.main.Sound;
 import com.empresa.world.Camera;
 import com.empresa.world.World;
 
 public class Player extends Entity {
 
 	public boolean right, up, left, down;
-	public int right_dir = 0, left_dir = 1;
+	public int right_dir = 0, left_dir = 1, up_dir = 2, down_dir = 3;
 	public int dir = right_dir;
 	public double speed = 1;
 		
@@ -20,18 +20,25 @@ public class Player extends Entity {
 	private boolean moved = false;
 	private BufferedImage[] rightPlayer;
 	private BufferedImage[] leftPlayer;
+	private BufferedImage[] upPlayer;
+	private BufferedImage[] downPlayer;
 	
 	private BufferedImage[] rightPlayerDamage;
 	private BufferedImage[] leftPlayerDamage;
+	private BufferedImage[] upPlayerDamage;
+	private BufferedImage[] downPlayerDamage;
 	
 	private boolean hasGun = false;
 
 	public int ammo = 0, maxAmmo = 100;
 	
+	public boolean shoot = false, mouseShoot = false;
+	
 	public boolean isDamaged = false;
 	private int damageFrames = 0;
 	
 	public double life = 100, maxLife = 100;
+	public int mx,my;
 
 	
 	public Player(int x, int y, int width, int height, BufferedImage sprite) {
@@ -40,8 +47,12 @@ public class Player extends Entity {
 		
 		rightPlayer = new BufferedImage[4];
 		leftPlayer = new BufferedImage[4];
+		upPlayer = new BufferedImage[4];
+		downPlayer = new BufferedImage[4];
 		rightPlayerDamage = new BufferedImage[4];
 		leftPlayerDamage = new BufferedImage[4];
+		upPlayerDamage = new BufferedImage[4];
+		downPlayerDamage = new BufferedImage[4];
 
 		
 		for(int i = 0; i < 4; i++ ) {
@@ -58,6 +69,20 @@ public class Player extends Entity {
 		
 		for(int i = 0; i < 4; i++ ) {
 			leftPlayerDamage[i] = Game.spritesheet.getSprite(34 + i*(16), 50, 16, 16);
+		}
+		for(int i = 0; i < 4; i++ ) {
+			downPlayer[i] = Game.spritesheet.getSprite(34 + i*(16), 81, 16, 16);
+		}
+		
+		for(int i = 0; i < 4; i++ ) {
+			upPlayer[i] = Game.spritesheet.getSprite(34 + i*(16), 97, 16, 16);
+		}
+		for(int i = 0; i < 4; i++ ) {
+			downPlayerDamage[i] = Game.spritesheet.getSprite(34 + i*(16),115, 16, 16);
+		}
+		
+		for(int i = 0; i < 4; i++ ) {
+			upPlayerDamage[i] = Game.spritesheet.getSprite(34 + i*(16), 131, 16, 16);
 		}
 	}
 
@@ -76,10 +101,12 @@ public class Player extends Entity {
 		}
 		if(up && World.isFree(this.getX(), (int)(y-speed))) {
 			moved = true;
+			dir = up_dir;
 			y-=speed;
 		}
 		else if(down && World.isFree(this.getX(), (int)(y+speed))) {
 			moved = true;
+			dir = down_dir;
 			y+=speed;
 		}
 		
@@ -106,14 +133,88 @@ public class Player extends Entity {
 			}
 		}
 		
+		if(shoot && hasGun) {
+			shoot = false; //one shot at a time
+			if(ammo > 0) {
+				ammo--;
+				
+				int dx = 0;
+				int dy = 0;
+				int px = 0;
+				int py = 0;
+		
+				
+				if(dir == right_dir) {
+					dx = 1;
+					px = 8;
+				}
+				else if(dir == left_dir){
+					dx = -1;
+				}
+				if(dir == up_dir) {
+					px = 6;
+					dy = -1;
+					py = -4;
+				}
+				else if(dir == down_dir){
+					px = 7;
+					dy = 1;
+					py = 2;
+				}
+			
+				Sound.shootEffect.play();
+				BulletShoot bullet = new BulletShoot(this.getX() + px, this.getY() + py, 3, 3, null, dx, dy);
+				Game.bullets.add(bullet);
+			}
+			else if(ammo == 0) {
+				Sound.emptyGun.play();
+			}
+		}	
+		
+		if(mouseShoot) {
+			mouseShoot = false;
+			
+			double angle = Math.atan2(my - (this.getY() + 8 - Camera.y), mx - (this.getX() + 8 - Camera.x));
+			//System.out.println(angle);
+			if(hasGun && ammo > 0) {
+				ammo--;
+				double dx = Math.cos(angle); 
+				double dy = Math.sin(angle);
+				int px = 0, py = 0;
+				if(dir == right_dir) {
+					dx = 1;
+					px = 8;
+				}
+				else if(dir == left_dir) {
+					dx = -1;
+					px = 3;
+				}
+				if(dir == up_dir) {
+					px = 6;
+					dy = -1;
+					py = -4;
+				}
+				else if(dir == down_dir) {
+					px = 7;
+					dy = 1;
+					py = 2;
+				}
+				
+				Sound.shootEffect.play();
+				BulletShoot bullet = new BulletShoot(this.getX() + px, this.getY() + py, 3, 3, null, dx, dy);
+				Game.bullets.add(bullet);
+			}
+			
+			else if(hasGun && ammo == 0) {
+				Sound.emptyGun.play();
+			}
+			
+			
+		}
+		
+		
 		if(life <= 0) {
-			Game.entities = new ArrayList<Entity>();
-			Game.enemies = new ArrayList<Enemy>();
-			Game.spritesheet = new Spritesheet("/spritesheet.png");
-			Game.player = new Player(0, 0, 16, 16, Game.spritesheet.getSprite(34, 0, 16, 16));
-			Game.entities.add(Game.player);
-			Game.world = new World("/map.png");
-			return;
+			Game.gameState = "GAME_OVER";
 		}
 		
 		Camera.x = Camera.clamp(getX() - (Game.WIDTH/2), 0, World.WIDTH*16 - Game.WIDTH);
@@ -128,7 +229,7 @@ public class Player extends Entity {
 				if(Entity.isColidding(this, atual)) {
 					hasGun = true;
 					Game.entities.remove(atual);
-					
+					Sound.takeGun.play();
 				}
 			}
 		}
@@ -140,8 +241,12 @@ public class Player extends Entity {
 			if(atual instanceof Bullet) {
 				if(Entity.isColidding(this, atual)) {
 					if(ammo < maxAmmo) {
-						ammo += 10;
+						ammo += 100;
+						if(ammo > maxAmmo)
+							ammo = maxAmmo;
+						
 						Game.entities.remove(atual);
+						Sound.takeAmmo.play();
 					}
 				}
 			}
@@ -153,10 +258,13 @@ public class Player extends Entity {
 			Entity atual = Game.entities.get(i);
 			if(atual instanceof LifePack) {
 				if(Entity.isColidding(this, atual)) {
-					life+=10;
-					if(life > 100)
-						life = 100;
-					Game.entities.remove(atual);
+					if(life < 100) {
+						life+=10;
+						if(life > 100)
+							life = 100;
+						Game.entities.remove(atual);
+						Sound.pickLife.play();
+					}	
 				}
 			}
 		}
@@ -180,6 +288,20 @@ public class Player extends Entity {
 
 				}
 			}
+			else if(dir == up_dir) {
+				g.drawImage(upPlayer[index], this.getX() - Camera.x, this.getY() - Camera.y, null);
+				if(hasGun) {
+					g.drawImage(Entity.GUN_UP, this.getX() + 4 - Camera.x, this.getY() - 2 - Camera.y, null);
+
+				}
+			}
+			else if(dir == down_dir) {
+				g.drawImage(downPlayer[index], this.getX() - Camera.x, this.getY() - Camera.y, null);
+				if(hasGun) {
+					g.drawImage(Entity.GUN_DOWN, this.getX() + 5 - Camera.x, this.getY() + 11 - Camera.y, null);
+
+				}
+			}
 		} 
 		
 		else {
@@ -196,6 +318,21 @@ public class Player extends Entity {
 				if(hasGun) {
 					//draw gun at left
 					g.drawImage(Entity.GUN_LEFT, this.getX() - 8 - Camera.x, this.getY() + 2 - Camera.y, null);
+
+				}
+			}
+			if(dir == up_dir) {
+				g.drawImage(upPlayerDamage[index], this.getX() - Camera.x, this.getY() - Camera.y,  null);
+				if(hasGun) {
+					//draw gun at right
+					g.drawImage(Entity.GUN_UP, this.getX() + 4 - Camera.x, this.getY() - 2 - Camera.y, null);
+				}	
+			}
+			else if(dir == down_dir) {
+				g.drawImage(downPlayerDamage[index], this.getX() - Camera.x, this.getY() - Camera.y,  null);
+				if(hasGun) {
+					//draw gun at left
+					g.drawImage(Entity.GUN_DOWN, this.getX() + 5 - Camera.x, this.getY() + 11 - Camera.y, null);
 
 				}
 			}
