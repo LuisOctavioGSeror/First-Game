@@ -26,6 +26,8 @@ import javax.swing.JFrame;
 import com.empresa.entities.Boss;
 import com.empresa.entities.BulletShoot;
 import com.empresa.entities.Enemy;
+import com.empresa.entities.EnemyPurple;
+import com.empresa.entities.EnemyRed;
 import com.empresa.entities.Entity;
 import com.empresa.entities.Player;
 import com.empresa.graphics.Spritesheet;
@@ -47,15 +49,20 @@ public class Game extends Canvas implements Runnable,KeyListener,MouseListener{
 	public static final int SCALE = 3;
 	
 	
-	private int CUR_LEVEL = 1, MAX_LEVEL = 3;
+	private int CUR_LEVEL = 1, MAX_LEVEL = 6;
 	private BufferedImage image;
 	
 	public static List<Entity> entities;
 	public static List<Enemy> enemies;
+	public static List<EnemyPurple> enemiesPurple;
+	public static List<EnemyRed> enemiesRed;
+
 	public static List<Boss> boss;
 	public static List<BulletShoot> bullets;
 
 	public static Spritesheet spritesheet;
+	
+	public static Spritesheet spritesheetMonsters;
 	
 	public static World world;
 	
@@ -92,9 +99,14 @@ public class Game extends Canvas implements Runnable,KeyListener,MouseListener{
 		entities = new ArrayList<Entity>();
 		enemies = new ArrayList<Enemy>();
 		boss = new ArrayList<Boss>();
+		enemiesPurple = new ArrayList<EnemyPurple>();
+		enemiesRed = new ArrayList<EnemyRed>();
+
+
 
 		bullets = new ArrayList<BulletShoot>();
 		spritesheet = new Spritesheet("/spritesheet3.png");
+		spritesheetMonsters = new Spritesheet("/spritesheetMonsters.png"); //monsters its the purple and red zombie and space gun
 		player = new Player(0, 0, 16, 16, spritesheet.getSprite(34, 0, 16, 16));
 		entities.add(player);
 		world = new World("/map_level_1.png");
@@ -140,7 +152,7 @@ public class Game extends Canvas implements Runnable,KeyListener,MouseListener{
 		
 		if(gameState == "NORMAL") {
 			
-			Sound.start();
+			//Sound.start();
 			
 			backGroundMusicCount++;
 			if(backGroundMusicCount >= 4)
@@ -164,7 +176,7 @@ public class Game extends Canvas implements Runnable,KeyListener,MouseListener{
 				bullets.get(i).tick();	
 			}
 			
-			if(enemies.size() == 0) {
+			if(enemies.size() == 0 && enemiesPurple.size() == 0) {
 				//System.out.println("proximo level");
 				CUR_LEVEL++;
 				if(CUR_LEVEL > MAX_LEVEL) //TEM UMA BOA RAZAO PRA NAO SER CUR_LEVEL<MAX_LEVEL CUR_LEVEL++ 
@@ -236,6 +248,7 @@ public class Game extends Canvas implements Runnable,KeyListener,MouseListener{
 		g.setFont(new Font("arial", Font.BOLD, 20));
 		g.setColor(Color.white);
 		g.drawString("Ammo: "+ player.ammo, 15, 75);
+		g.drawString("Points: "+ player.points, 150, 75);
 		if(gameState == "GAME_OVER") {
 			Graphics2D g2 = (Graphics2D) g;
 			g2.setColor(new Color(0,0,0,100));
@@ -269,7 +282,7 @@ public class Game extends Canvas implements Runnable,KeyListener,MouseListener{
 		int frames = 0;
 		double timer = System.currentTimeMillis();
 		requestFocus(); //foco automatico ao iniciar
-		Sound.menu.loop(); //nao ta funcionando n sei pq
+		//Sound.menu.loop(); //nao ta funcionando n sei pq
 		while(isRunning) {
 			long now = System.nanoTime();
 			delta+= (now - lastTime) / ns;

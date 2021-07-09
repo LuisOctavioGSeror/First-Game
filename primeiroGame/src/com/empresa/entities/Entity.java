@@ -15,8 +15,11 @@ public class Entity {
 	
 	public static BufferedImage LIFEPACK_EN = Game.spritesheet.getSprite(97, 0, 16, 16);
 	public static BufferedImage WEAPON_EN = Game.spritesheet.getSprite(113, 0, 16, 16);
+	public static BufferedImage SPACE_WEAPON_EN = Game.spritesheetMonsters.getSprite(113, 114, 16, 16);
 	public static BufferedImage BULLET_EN = Game.spritesheet.getSprite(97, 16, 16, 16);
 	public static BufferedImage ENEMY_EN = Game.spritesheet.getSprite(113, 16, 16, 16);
+	public static BufferedImage ENEMYPURPLE_EN = Game.spritesheetMonsters.getSprite(113, 114, 16, 16);
+	public static BufferedImage ENEMYRED_EN = Game.spritesheetMonsters.getSprite(113, 81, 16, 16);
 	public static BufferedImage BOSS_EN = Game.spritesheet.getSprite(0, 65, 30, 30);
 
 	//public static BufferedImage ENEMY_FEEDBACK = Game.spritesheet.getSprite(0, 0, 0, 0);
@@ -24,6 +27,11 @@ public class Entity {
 	public static BufferedImage GUN_RIGHT = Game.spritesheet.getSprite(130, 0, 16, 16);
 	public static BufferedImage GUN_UP = Game.spritesheet.getSprite(18, 63, 10, 10);
 	public static BufferedImage GUN_DOWN = Game.spritesheet.getSprite(18, 50, 10, 10);
+	
+	public static BufferedImage SPACE_GUN_LEFT = Game.spritesheetMonsters.getSprite(141, 114, 16, 16);
+	public static BufferedImage SPACE_GUN_RIGHT = Game.spritesheetMonsters.getSprite(130, 114, 16, 16);
+	public static BufferedImage SPACE_GUN_UP = Game.spritesheetMonsters.getSprite(18, 114, 10, 10);
+	public static BufferedImage SPACE_GUN_DOWN = Game.spritesheetMonsters.getSprite(18, 126, 10, 10);
 
 
 	protected double x;

@@ -15,6 +15,7 @@ public class Player extends Entity {
 	public int right_dir = 0, left_dir = 1, up_dir = 2, down_dir = 3;
 	public int dir = right_dir;
 	public double speed = 1;
+	public static String PlayerGun = "Gun";
 		
 	private int frames = 0, maxFrames = 5, index = 0, maxIndex = 3;
 	private boolean moved = false;
@@ -31,6 +32,7 @@ public class Player extends Entity {
 	private boolean hasGun = false;
 
 	public int ammo = 0, maxAmmo = 100;
+	public static int points = 0;
 	
 	public boolean shoot = false, mouseShoot = false;
 	
@@ -124,6 +126,7 @@ public class Player extends Entity {
 		checkCollisionLifePack();
 		checkCollisionAmmo();
 		checkCollisionGun();
+		checkCollisionSpaceGun();
 		
 		if(isDamaged) {
 			this.damageFrames++;
@@ -162,7 +165,12 @@ public class Player extends Entity {
 					py = 2;
 				}
 			
-				Sound.shootEffect.play();
+				if(PlayerGun == "Gun")
+					Sound.shootEffect.play();
+				
+				else if(PlayerGun == "SpaceGun")
+					Sound.spaceGunShootEffect.play();
+					
 				BulletShoot bullet = new BulletShoot(this.getX() + px, this.getY() + py, 3, 3, null, dx, dy);
 				Game.bullets.add(bullet);
 			}
@@ -200,7 +208,12 @@ public class Player extends Entity {
 					py = 2;
 				}
 				
-				Sound.shootEffect.play();
+				if(PlayerGun == "Gun")
+					Sound.shootEffect.play();
+				
+				else if(PlayerGun == "SpaceGun")
+					Sound.spaceGunShootEffect.play();
+				
 				BulletShoot bullet = new BulletShoot(this.getX() + px, this.getY() + py, 3, 3, null, dx, dy);
 				Game.bullets.add(bullet);
 			}
@@ -230,6 +243,22 @@ public class Player extends Entity {
 					hasGun = true;
 					Game.entities.remove(atual);
 					Sound.takeGun.play();
+					PlayerGun = "Gun";
+				}
+			}
+		}
+	}
+	
+	public void checkCollisionSpaceGun() {
+		for(int i = 0; i < Game.entities.size(); i++) {
+			Entity atual = Game.entities.get(i);
+			if(atual instanceof SpaceWeapon) {
+				if(Entity.isColidding(this, atual)) {
+					hasGun = true;
+					Game.entities.remove(atual);
+					Sound.takeGun.play();
+					PlayerGun = "SpaceGun";
+
 				}
 			}
 		}
@@ -276,29 +305,45 @@ public class Player extends Entity {
 			
 			if(dir == right_dir) {
 				g.drawImage(rightPlayer[index], this.getX() - Camera.x, this.getY() - Camera.y, null);
-				if(hasGun) {
+				if(hasGun && PlayerGun == "Gun") {
 					g.drawImage(Entity.GUN_RIGHT, this.getX() + 8 - Camera.x, this.getY() + 2 - Camera.y, null);
+
+				}
+				else if(hasGun && PlayerGun == "SpaceGun") {
+					g.drawImage(Entity.SPACE_GUN_RIGHT, this.getX() + 8 - Camera.x, this.getY() + 2 - Camera.y, null);
 
 				}
 			}
 			else if(dir == left_dir) {
 				g.drawImage(leftPlayer[index], this.getX() - Camera.x, this.getY() - Camera.y, null);
-				if(hasGun) {
+				if(hasGun && PlayerGun == "Gun") {
 					g.drawImage(Entity.GUN_LEFT, this.getX() - 8 - Camera.x, this.getY() + 2 - Camera.y, null);
+
+				}
+				else if(hasGun && PlayerGun == "SpaceGun") {
+					g.drawImage(Entity.SPACE_GUN_LEFT, this.getX() - 8 - Camera.x, this.getY() + 2 - Camera.y, null);
 
 				}
 			}
 			else if(dir == up_dir) {
 				g.drawImage(upPlayer[index], this.getX() - Camera.x, this.getY() - Camera.y, null);
-				if(hasGun) {
+				if(hasGun && PlayerGun == "Gun") {
 					g.drawImage(Entity.GUN_UP, this.getX() + 4 - Camera.x, this.getY() - 2 - Camera.y, null);
+
+				}
+				else if(hasGun && PlayerGun == "SpaceGun") {
+					g.drawImage(Entity.SPACE_GUN_UP, this.getX() + 4 - Camera.x, this.getY() - 2 - Camera.y, null);
 
 				}
 			}
 			else if(dir == down_dir) {
 				g.drawImage(downPlayer[index], this.getX() - Camera.x, this.getY() - Camera.y, null);
-				if(hasGun) {
+				if(hasGun && PlayerGun == "Gun") {
 					g.drawImage(Entity.GUN_DOWN, this.getX() + 5 - Camera.x, this.getY() + 11 - Camera.y, null);
+
+				}
+				else if(hasGun && PlayerGun == "SpaceGun") {
+					g.drawImage(Entity.SPACE_GUN_DOWN, this.getX() + 5 - Camera.x, this.getY() + 11 - Camera.y, null);
 
 				}
 			}
@@ -308,31 +353,47 @@ public class Player extends Entity {
 			
 			if(dir == right_dir) {
 				g.drawImage(rightPlayerDamage[index], this.getX() - Camera.x, this.getY() - Camera.y,  null);
-				if(hasGun) {
+				if(hasGun && PlayerGun == "Gun") {
 					//draw gun at right
 					g.drawImage(Entity.GUN_RIGHT, this.getX() + 8 - Camera.x, this.getY() + 2 - Camera.y, null);
-				}	
+				}
+				else if(hasGun && PlayerGun == "SpaceGun") {
+					g.drawImage(Entity.SPACE_GUN_RIGHT, this.getX() + 8 - Camera.x, this.getY() + 2 - Camera.y, null);
+
+				}
 			}
 			else if(dir == left_dir) {
 				g.drawImage(leftPlayerDamage[index], this.getX() - Camera.x, this.getY() - Camera.y,  null);
-				if(hasGun) {
+				if(hasGun && PlayerGun == "Gun") {
 					//draw gun at left
 					g.drawImage(Entity.GUN_LEFT, this.getX() - 8 - Camera.x, this.getY() + 2 - Camera.y, null);
+
+				}
+				else if(hasGun && PlayerGun == "SpaceGun") {
+					g.drawImage(Entity.SPACE_GUN_LEFT, this.getX() - 8 - Camera.x, this.getY() + 2 - Camera.y, null);
 
 				}
 			}
 			if(dir == up_dir) {
 				g.drawImage(upPlayerDamage[index], this.getX() - Camera.x, this.getY() - Camera.y,  null);
-				if(hasGun) {
+				if(hasGun && PlayerGun == "Gun") {
 					//draw gun at right
 					g.drawImage(Entity.GUN_UP, this.getX() + 4 - Camera.x, this.getY() - 2 - Camera.y, null);
-				}	
+				}
+				else if(hasGun && PlayerGun == "SpaceGun") {
+					g.drawImage(Entity.SPACE_GUN_UP, this.getX() + 4 - Camera.x, this.getY() - 2 - Camera.y, null);
+
+				}
 			}
 			else if(dir == down_dir) {
 				g.drawImage(downPlayerDamage[index], this.getX() - Camera.x, this.getY() - Camera.y,  null);
-				if(hasGun) {
+				if(hasGun && PlayerGun == "Gun") {
 					//draw gun at left
 					g.drawImage(Entity.GUN_DOWN, this.getX() + 5 - Camera.x, this.getY() + 11 - Camera.y, null);
+
+				}
+				else if(hasGun && PlayerGun == "SpaceGun") {
+					g.drawImage(Entity.SPACE_GUN_DOWN, this.getX() + 5 - Camera.x, this.getY() + 11 - Camera.y, null);
 
 				}
 			}

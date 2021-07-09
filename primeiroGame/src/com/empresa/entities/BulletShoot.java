@@ -14,6 +14,8 @@ public class BulletShoot extends Entity {
 	private double dy;
 	private double spd = 8; //bullet speed
 	
+	public static int bulletShootDamage = 5;
+	
 	private int lifeTime = 30, curLifeTime = 0;
 	
 	public BulletShoot(int x, int y, int width, int height, BufferedImage sprite, double dx, double dy) {
@@ -23,6 +25,12 @@ public class BulletShoot extends Entity {
 	}
 
 	public void tick() {
+		
+		if(Player.PlayerGun == "Gun")
+			bulletShootDamage = 5;
+		
+		else if(Player.PlayerGun == "SpaceGun")
+			bulletShootDamage = 25;
 		
 		x+=dx*spd;
 		y+=dy*spd;
@@ -41,8 +49,16 @@ public class BulletShoot extends Entity {
 	}
 	
 	public void render(Graphics g) {
-		g.setColor(Color.yellow);
-		g.fillOval(this.getX() - Camera.x, this.getY() + 9 - Camera.y, width, height);
+		if(Player.PlayerGun == "Gun") {
+			g.setColor(Color.yellow);
+			g.fillOval(this.getX() - Camera.x, this.getY() + 9 - Camera.y, width, height);
+		}
+		else if(Player.PlayerGun == "SpaceGun") {
+			g.setColor(Color.green);
+			g.fillOval(this.getX() - Camera.x, this.getY() + 9 - Camera.y, width, height);
+		}
+		
+		
 	}
 
 }

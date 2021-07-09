@@ -92,6 +92,7 @@ public class Sound {
 	public static Sound musicBackground = new Sound("/backGround.wav");
 	public static final Sound hurtEffect = new Sound("/hurt.wav");
 	public static final Sound shootEffect = new Sound("/shoot3.wav");
+	public static final Sound spaceGunShootEffect = new Sound("/spaceGun.wav");
 	public static final Sound emptyGun = new Sound("/emptyGun.wav");
 	public static final Sound takeGun = new Sound("/takeGun.wav");
 	public static final Sound takeAmmo = new Sound("/takeAmmo.wav");

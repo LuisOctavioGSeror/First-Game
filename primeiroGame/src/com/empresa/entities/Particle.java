@@ -35,7 +35,7 @@ public class Particle extends Entity {
 	}
 	
 	public void render(Graphics g) {
-		g.setColor(Color.red);
+		g.setColor(Color.green);
 		g.fillRect(this.getX() - Camera.x, this.getY() + 9 - Camera.y, width, height);
 	}
 

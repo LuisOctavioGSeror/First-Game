@@ -11,12 +11,12 @@ import com.empresa.main.Sound;
 import com.empresa.world.AStar;
 import com.empresa.world.Camera;
 import com.empresa.world.Vector2i;
-import com.empresa.world.World;
 
-public class Enemy extends Entity {
+public class EnemyPurple extends Entity {
 	
+
 	public double speed = 0.5;
-	private boolean moved = false;
+	//private boolean moved = false;
 	private boolean enemyIsDamaged = false;
 	
 	private int damagedFrames = 10, damagedCurrent = 0;
@@ -32,19 +32,19 @@ public class Enemy extends Entity {
 	
 
 	
-	private int life = 10;
+	private int life = 50;
 
-	public Enemy(int x, int y, int width, int height, BufferedImage sprite) {
+	public EnemyPurple(int x, int y, int width, int height, BufferedImage sprite) {
 		super(x, y, width, height, null);
 		sprites = new BufferedImage[3];
-		sprites[0] = Game.spritesheet.getSprite(112, 17, 16, 16);
-		sprites[1] = Game.spritesheet.getSprite(127, 17, 16, 16);
-		sprites[2] = Game.spritesheet.getSprite(143, 17, 16, 16);
+		sprites[0] = Game.spritesheetMonsters.getSprite(112, 17, 16, 16);
+		sprites[1] = Game.spritesheetMonsters.getSprite(127, 17, 16, 16);
+		sprites[2] = Game.spritesheetMonsters.getSprite(143, 17, 16, 16);
 		
 		enemyDamaged = new BufferedImage[3];
-		enemyDamaged[0] = Game.spritesheet.getSprite(112, 33, 16, 16);
-		enemyDamaged[1] = Game.spritesheet.getSprite(127, 33, 16, 16);
-		enemyDamaged[2] = Game.spritesheet.getSprite(143, 33, 16, 16);
+		enemyDamaged[0] = Game.spritesheetMonsters.getSprite(112, 33, 16, 16);
+		enemyDamaged[1] = Game.spritesheetMonsters.getSprite(127, 33, 16, 16);
+		enemyDamaged[2] = Game.spritesheetMonsters.getSprite(143, 33, 16, 16);
 
 	}
 
@@ -58,7 +58,7 @@ public class Enemy extends Entity {
 		
 		daley = System.currentTimeMillis();
 		
-		// without A* method
+		/* without A* method
 		moved = false;
 		//if(Game.rand.nextInt(100) < 16) {  //usando aleatoriedade para "manipular" velocidade
 			if(isColiddingWithPlayer() == false) {
@@ -96,7 +96,7 @@ public class Enemy extends Entity {
 			}
 				
 			
-			/*
+			*/
 			if(!isColiddingWithPlayer() && ((this.calculateDistance((int)this.x, (int)this.y, (int)Game.player.getX(), (int)Game.player.getY()) < 150) || Game.enemies.size() <= 10)) {
 				if(path == null || path.size() == 0 || (daley - initialTime >= 500)) {
 					initialTime = System.currentTimeMillis();
@@ -108,11 +108,6 @@ public class Enemy extends Entity {
 				}
 			}
 		
-			
-			
-			followPath(path, speed);
-		*/
-			
 			else if(isColiddingWithPlayer()) {
 				//colidindo
 				if(Game.rand.nextInt(100) < 10) {
@@ -126,6 +121,8 @@ public class Enemy extends Entity {
 				}
 			}
 			
+			followPath(path, speed);
+		
 			//if(moved) {
 			frames++;
 			if(frames == maxFrames) {
@@ -148,7 +145,6 @@ public class Enemy extends Entity {
 			Sound.zombieHurt.play();
 			if(Player.PlayerGun == "SpaceGun")
 				BulletShoot.generateParticles(100, (int)x, (int)y);
-			
 			return;
 		}
 		
@@ -162,9 +158,9 @@ public class Enemy extends Entity {
 	}
 	
 	public void destroySelf() {
-		Game.enemies.remove(this);
+		Game.enemiesPurple.remove(this);
 		Game.entities.remove(this);
-		Player.points += 20;
+		Player.points += 100;
 	}
 	
 	public void isCollidingWithBullet() {

@@ -50,6 +50,18 @@ public class World {
 						Game.entities.add(en);
 						Game.enemies.add(en);
 					}
+					else if(pixelAtual == 0xFFFF19B2) {
+						//Enemy Purple
+						EnemyPurple en = new EnemyPurple(xx*16, yy*16, 16, 16, Entity.ENEMYPURPLE_EN);
+						Game.entities.add(en);
+						Game.enemiesPurple.add(en);
+					}
+					else if(pixelAtual == 0xFF68000F) {
+						//Enemy Red
+						EnemyRed en = new EnemyRed(xx*16, yy*16, 16, 16, Entity.ENEMYRED_EN);
+						Game.entities.add(en);
+						Game.enemiesRed.add(en);
+					}
 					else if(pixelAtual == 0xFFF71400) {  
 						//Enemy
 						Boss en = new Boss(xx*16, yy*16, 30, 30, Entity.BOSS_EN);
@@ -59,6 +71,11 @@ public class World {
 					else if(pixelAtual == 0xFFFF7200) {
 						//Weapon
 						Game.entities.add(new Weapon(xx*16, yy*16, 16, 16, Entity.WEAPON_EN));
+
+					}
+					else if(pixelAtual == 0xFF6A0800) {
+						//Weapon
+						Game.entities.add(new SpaceWeapon(xx*16, yy*16, 16, 16, Entity.SPACE_WEAPON_EN));
 
 					}
 					else if(pixelAtual == 0xFF1CFF41) {
